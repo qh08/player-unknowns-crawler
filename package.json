@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node-dev index.js"
+    "test": "node-dev index.js",
+    "spd": "node ./src/spider.js"
+
   },
   "author": "",
   "license": "ISC",

@@ -1,14 +1,14 @@
 const superagent = require('superagent');
 const cheerio = require('cheerio');
-const players = require('../../config/player');
-const alg = require('../../utils/alg');
+const config = require('../config');
+const alg = require('./alg');
 
 const url_prefix = 'https://pubg.op.gg/user/';
 const url_server = 'as';
 
-players.forEach(function (value, index) {
-    const url = url_prefix + value + '?server=' + url_server;
-
+// players.forEach(function (value, index) {
+    // const url = url_prefix + value + '?server=' + url_server;
+    const url = 'https://pubg.op.gg/api/users/5a0c61397732d50001497349/matches/recent?server=sea&queue_size=&mode=';
     superagent
         .get(url)
         .set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8')
@@ -19,15 +19,16 @@ players.forEach(function (value, index) {
                 console.log('error');
             }
 
-            const $ = cheerio.load(res.text);
-            let damage = [];
+            // const $ = cheerio.load(res.text);
+            // let damage = [];
+            console.dir(res.text);
 
-            $('.matches__list .matches-item__summary .matches-item__column.matches-item__column--damage .matches-item__value').each((i, element) => {
-                damage.push(Number($(element).text()));
-            });
+            // $('.matches__list .matches-item__summary .matches-item__column.matches-item__column--damage .matches-item__value').each((i, element) => {
+            //     damage.push(Number($(element).text()));
+            // });
 
             // console.dir(damage);
-            console.log(value + ':最近' + damage.length + '场，伤害平均数：' + alg.average(damage) + ',伤害标准差：' + alg.stanDev(damage).toFixed(2));
+            // console.log(value + ':最近' + damage.length + '场，伤害平均数：' + alg.average(damage) + ',伤害标准差：' + alg.stanDev(damage).toFixed(2));
         });
-});
+// });
 // const url = 'https://pubg.op.gg/user/{id}?server=as';
