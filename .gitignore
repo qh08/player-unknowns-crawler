@@ -58,4 +58,4 @@ typings/
 .env
 
 # database.js
-./src/config/database.js
+src/config/database.js
