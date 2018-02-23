@@ -1,10 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
-const dataBase = require('../database');
-
+const dataBase = require('../config/database');
 
 const URL = `mongodb://${dataBase.username}:${dataBase.password}@${dataBase.ip}:${dataBase.port}/admin`;
-
-console.log(URL);
 
 MongoClient.connect(URL, function (err, db) {
     if (err) throw err;
