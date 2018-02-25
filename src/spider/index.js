@@ -1,34 +1,41 @@
 const superagent = require('superagent');
 const cheerio = require('cheerio');
-const config = require('../config');
-const alg = require('./alg');
+const async = require('async');
 
-const url_prefix = 'https://pubg.op.gg/user/';
-const url_server = 'as';
+const urlServer = ['as'];
 
-// players.forEach(function (value, index) {
-    // const url = url_prefix + value + '?server=' + url_server;
-    const url = 'https://pubg.op.gg/api/users/5a0c61397732d50001497349/matches/recent?server=sea&queue_size=&mode=';
-    superagent
-        .get(url)
-        .set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8')
-        .set('cookie', '_ga=GA1.2.1217097403.1518095147; _referrer=user,; _gid=GA1.2.98189766.1518229000; _gat_gtag_UA_37377845_10=1; recent-searches=Take-you-fly,flygepi,frankknnaarf; XSRF-TOKEN=eyJpdiI6IldrV09Ta3VJZFdVXC9kSCtcL20xdXk1UT09IiwidmFsdWUiOiJrQUs1N0dsKzNFcDVuMHJBcG5SMlZ1M0k4UmNkY1FWQnhlVG10RHpDeVZoY3VRazZ4akRzVStiS3I3akZJT2lLeE9uU0dZYURybUxSS2huRU1EcDRVQT09IiwibWFjIjoiYWU5MjhmMzE4ZGUxNGUzZGViY2E3ZjU4MDljMjE0MDI1YmRmMGZkYTI4Y2ExZGZkNWI3MjQwM2Q2MWY0OTQwMSJ9; pubg_session=eyJpdiI6InNIVWU1SFpwQlJFWVIxYkV3U3dIMUE9PSIsInZhbHVlIjoid1BMVFRcL2tsV3p0XC9ITzh3RVRrd1plQjJvdDg0ZGdJK0c0Ulk0MXlCTm1iZXJ0Tkg4bm0wdXRqTHF1WENoSHExR08zakZzVEZ4b2xhMnJncFhJOEtvdz09IiwibWFjIjoiYWQ0YjU2NDczODQwMDhlZjg1NDg0MTQ3YTc3ZDExOTM3Mjc4NDMyOTRkNWU3Y2I3YjFlYzQwNGNhNGUwOGM3NiJ9')
-        .end(function (err, res) {
+module.exports = {
+    getRecentBattleByUserId: function (userId, offset) {
 
-            if (err) {
-                console.log('error');
-            }
+        let returnData;
+        offset = offset || '';
 
-            // const $ = cheerio.load(res.text);
-            // let damage = [];
-            console.dir(res.text);
 
-            // $('.matches__list .matches-item__summary .matches-item__column.matches-item__column--damage .matches-item__value').each((i, element) => {
-            //     damage.push(Number($(element).text()));
-            // });
+        async.mapLimit(urlServer, 1, async function (server) {
+            const url = `https://pubg.op.gg/api/users/${userId}/matches/recent?server=${server}&queue_size=&mode=&after=${offset}`;
+            console.log(url);
+            await superagent
+                .get(url)
+                .set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8')
+                .set('cookie', '_ga=GA1.2.1217097403.1518095147; _gid=GA1.2.1025910423.1519391337; _referrer=user,; XSRF-TOKEN=eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ%3D%3D; pubg_session=eyJpdiI6IkNsbzhlRXRibmRqbU1JNTVMNmVud0E9PSIsInZhbHVlIjoiWktzQVwveHY2NTVlakxuZjh6emZ4T0NyTHlxR3dpdFEweTFTdGM0SlNsUjZ0WDQ3NmJOcDVuc0lcL3UwZHpNUlByV3I5T2VjUkhiQXRPenV6VzB5ZzROdz09IiwibWFjIjoiZGVmODc5NGU3MGI0ZWRjOWIzY2IzMWFkNjAxOTZmNDMxOGQzNGY4OTk1NmVkNTdjOTE2OGUzMTIxODZiYTJhYiJ9; _gat_gtag_UA_37377845_10=1;')
+                // .set('referer','https://pubg.op.gg/user/frankknnaarf?server=as')
+                .set('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36')
+                .set('x-newrelic-id', 'VQcEVlFSDBABVFlWDwMAV1U=')
+                .set('x-xsrf-token', 'eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ==')
+                .then(function (res) {
+                    return res.text.matches.items;
+                })
+                .catch(function (err) {
+                    if (err) {
+                        console.log(err.message);
+                    }
+                });
+        },function(err,result){
+            if (err) throw err
+            returnData = result;
+        })
+    }
+}
 
-            // console.dir(damage);
-            // console.log(value + ':最近' + damage.length + '场，伤害平均数：' + alg.average(damage) + ',伤害标准差：' + alg.stanDev(damage).toFixed(2));
-        });
-// });
-// const url = 'https://pubg.op.gg/user/{id}?server=as';
+var a = module.exports.getRecentBattleByUserId('5a0c61397732d50001497349');
+console.log(a);
