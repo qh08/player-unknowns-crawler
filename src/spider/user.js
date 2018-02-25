@@ -7,10 +7,10 @@ const players = require('../config/player');
 const url_prefix = 'https://pubg.op.gg/user/';
 const url_server = 'as';
 
-async.mapLimit(players, 2, function (player) {
+async.mapLimit(players, 2, async function (player) {
     const url = url_prefix + player;
-    // const url = 'https://www.baidu.com';
-    superagent
+
+    await superagent
         .get(url)
         .query({
             server : 'as'
@@ -20,10 +20,8 @@ async.mapLimit(players, 2, function (player) {
         .set('upgrade-insecure-requests', 1)
         .then(function (res) {
             const $ = cheerio.load(res.text) || {};
-            console.log($.html());
-            // const user_id = $('#userNickname').prop('data-user_id') || 'err';
-            // // return player + ':' + user_id;
-            // console.log(player + ':' + user_id);
+            const user_id = $('#userNickname').prop('data-user_id') || 'err';
+            return player + ':' + user_id;
         })
         .catch(function (err) {
             console.log('error');
