@@ -3,16 +3,19 @@ const cheerio = require('cheerio');
 const async = require('async');
 
 const userAgents = require('./userAgents');
+const dao = require('../dao');
 const urlServer = ['as'];
 
 module.exports = {
     getRecentBattleByUserId: function (userId, offset) {
 
         let returnData;
+        const self = this;
         const userAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
         offset = offset || '';
 
         async.mapLimit(urlServer, 2, function (server, callback) {
+
             const url = `https://pubg.op.gg/api/users/${userId}/matches/recent?server=${server}&queue_size=&mode=&after=${offset}`;
 
             superagent
@@ -26,12 +29,15 @@ module.exports = {
                 .set('x-xsrf-token', 'eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ==')
                 .end(function (err, res) {
                     if (err) callback(err);
-                    callback(null,JSON.parse(res.text).matches.items);
+                    callback(null, JSON.parse(res.text).matches.items);
                 })
-        }, function (err, result) {
+        }, function (err, results) {
             if (err) console.log(err);
-            console.log(result);
+            self.setBattles(results);
         })
+    },
+    setBattles: function (battles) {
+        dao.setBattles(battles);
     }
 }
 
