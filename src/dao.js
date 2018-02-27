@@ -9,30 +9,44 @@ async function getMongo() {
 
 module.exports = {
     setBattles: async function (battles) {
-        const client = await getMongo();
-        const pubgee = client.db(CONSTANT.PUBGEE);
-        const results = await pubgee.collection(CONSTANT.BATTLE).insertMany(battles);
-        client.close();
+        try {
+            const client = await getMongo();
+            const pubgee = client.db(CONSTANT.PUBGEE);
+            const results = await pubgee.collection(CONSTANT.BATTLE).insertMany(battles);
+            client.close();
+        } catch (error) {
+            console.log(error.stack);
+        }
     },
     getLastGameStartTime: async function (userId) {
-        const client = await getMongo();
-        const pubgee = client.db(CONSTANT.PUBGEE);
-        const findDetail = {
-            '_id': userId
-        };
-        const sortWay = {
-            started_at: 1
-        };
-        const results = await pubgee.collection(CONSTANT.BATTLE).find(findDetail).sort(sortWay).limit(1).toArray();
-        client.close();
+        try {
+            const client = await getMongo();
+            const pubgee = client.db(CONSTANT.PUBGEE);
+            const findDetail = {
+                '_id': userId
+            };
+            const sortWay = {
+                started_at: 1
+            };
+            const results = await pubgee.collection(CONSTANT.BATTLE).find(findDetail).sort(sortWay).limit(1).toArray();
+            client.close();
+
+            return results.started_at || '';
+
+        } catch (error) {
+            console.log(error.stack);
+        }
     },
     test: async function () {
-        const client = await getMongo();
-        const pubgee = client.db(CONSTANT.PUBGEE);
-        const results = await pubgee.collection('test').find().sort({name:1}).toArray();
-        console.log(results);
-        client.close();
+        try {
+            const client = await getMongo();
+            const pubgee = client.db(CONSTANT.PUBGEE);
+            const results = await pubgee.collection('test').find().sort({
+                name: 1
+            }).toArray();
+            client.close();
+        } catch (error) {
+            console.log(error.stack);
+        }
     }
 }
-
-module.exports.test();

@@ -4,14 +4,14 @@ const async = require('async');
 
 const userAgents = require('./userAgents');
 const dao = require('../dao');
-const urlServer = ['as'];
+const urlServer = ['sea'];
 
 module.exports = {
-    do: function (userId, offset) {
+    do: async function (userId, offset) {
         offset = offset || '';
-        console.log(`spider begin with userId : ${userid} , offset : ${offset}`);
+        console.log(`spider begin with userId : ${userId} , offset : ${offset}`);
 
-        const lastGameStartTime = dao.getLastGameStartTime(userId);
+        const lastGameStartTime = await dao.getLastGameStartTime(userId);
         console.log(`last game start time : ${lastGameStartTime}`);
 
         this.getRecentBattleByUserId(userId, offset, lastGameStartTime);
@@ -22,6 +22,8 @@ module.exports = {
         const self = this;
         const userAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
 
+
+        console.log('gets battle data from different servers');
         async.mapLimit(urlServer, 2, function (server, callback) {
 
             const url = `https://pubg.op.gg/api/users/${userId}/matches/recent?server=${server}&queue_size=&mode=&after=${offset}`;
@@ -37,19 +39,22 @@ module.exports = {
                 .set('x-xsrf-token', 'eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ==')
                 .end(function (err, res) {
                     if (err) callback(err);
+                    console.log(`receive battle data from server : ${server}`);
                     callback(null, JSON.parse(res.text).matches.items);
                 })
         }, function (err, results) {
             if (err) console.log(err);
-
             // compare the results`s start time with last game start time
+            console.log(results.length);
             for (let i = results.length - 1; i < 0; i--) {
                 const battle = results[i];
-                if (battle.started_at > lastGameStartTime) {
+                if (lastGameStartTime === '' || battle.started_at > lastGameStartTime) {
                     results.splice(i + 1, results.length - 1 - i);
+                    console.log(`last ${i} data is ok, start to insert to mongo`);
                     dao.setBattles(results);
 
                     if (i == results.length - 1) {
+                        console.log(`start to get more data by offset`);
                         self.getRecentBattleByUserId(userId, battle.offset, lastGameStartTime);
                     }
 
