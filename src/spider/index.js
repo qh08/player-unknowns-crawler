@@ -7,12 +7,20 @@ const dao = require('../dao');
 const urlServer = ['as'];
 
 module.exports = {
-    getRecentBattleByUserId: function (userId, offset) {
+    do: function (userId, offset) {
+        offset = offset || '';
+        console.log(`spider begin with userId : ${userid} , offset : ${offset}`);
+
+        const lastGameStartTime = dao.getLastGameStartTime(userId);
+        console.log(`last game start time : ${lastGameStartTime}`);
+
+        this.getRecentBattleByUserId(userId, offset, lastGameStartTime);
+    },
+    getRecentBattleByUserId: function (userId, offset, lastGameStartTime) {
 
         let returnData;
         const self = this;
         const userAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
-        offset = offset || '';
 
         async.mapLimit(urlServer, 2, function (server, callback) {
 
@@ -33,12 +41,24 @@ module.exports = {
                 })
         }, function (err, results) {
             if (err) console.log(err);
-            self.setBattles(results);
+
+            // compare the results`s start time with last game start time
+            for (let i = results.length - 1; i < 0; i--) {
+                const battle = results[i];
+                if (battle.started_at > lastGameStartTime) {
+                    results.splice(i + 1, results.length - 1 - i);
+                    dao.setBattles(results);
+
+                    if (i == results.length - 1) {
+                        self.getRecentBattleByUserId(userId, battle.offset, lastGameStartTime);
+                    }
+
+                    break;
+                }
+            }
+
         })
     },
-    setBattles: function (battles) {
-        dao.setBattles(battles);
-    }
 }
 
-module.exports.getRecentBattleByUserId('5a0c61397732d50001497349');
+module.exports.do('5a0c61397732d50001497349');
