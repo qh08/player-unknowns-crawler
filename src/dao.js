@@ -18,20 +18,22 @@ module.exports = {
             console.log(error.stack);
         }
     },
-    getLastGameStartTime: async function (userId) {
+    getLastGameBattle: async function (userId, server) {
         try {
             const client = await getMongo();
             const pubgee = client.db(CONSTANT.PUBGEE);
             const findDetail = {
-                '_id': userId
+                participant: {
+                    _id: userId
+                },
+                server: server
             };
             const sortWay = {
                 started_at: 1
             };
             const results = await pubgee.collection(CONSTANT.BATTLE).find(findDetail).sort(sortWay).limit(1).toArray();
             client.close();
-
-            return results.started_at || '';
+            return results;
 
         } catch (error) {
             console.log(error.stack);
@@ -50,3 +52,5 @@ module.exports = {
         }
     }
 }
+
+module.exports.getLastGameBattle('5a0c61397732d50001497349','sea');
