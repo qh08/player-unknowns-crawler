@@ -7,24 +7,29 @@ const dao = require('../dao');
 const urlServer = ['sea'];
 
 module.exports = {
-    do: async function (userId) {
+    do: async function ({
+        userName,
+        userId
+    }) {
         try {
             const self = this;
 
             async.eachLimit(urlServer, 2, async (server) => {
 
-                const lastBattle = await dao.getLastGameBattle(userId, server);
+                const lastBattle = await dao.getLastGameBattle(userName, userId, server);
                 const offset = lastBattle.offset || '';
                 const lastGameStartTime = lastBattle.started_at || '';
 
-                const results = await this.getRecentBattleByUserId(userId, offset, lastGameStartTime, server);
-
-                self.setBattles(userId, lastGameStartTime, server, results);
+                self.doSpider(userId, offset, lastGameStartTime, server);
 
             });
         } catch (error) {
             console.log(error.stack);
         }
+    },
+    doSpider: async function (userId, offset, lastGameStartTime, server) {
+        const results = await this.getRecentBattleByUserId(userId, offset, lastGameStartTime, server);
+        self.setBattles(userId, lastGameStartTime, server, results);
     },
     getRecentBattleByUserId: async function (userId, offset, lastGameStartTime, server) {
         console.log(`userId : ${userId}`);
@@ -36,6 +41,7 @@ module.exports = {
         const userAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
         const url = `https://pubg.op.gg/api/users/${userId}/matches/recent?server=${server}&queue_size=&mode=&after=${offset}`;
 
+        console.log(`url: ${url}`);
         return await superagent
             .get(url)
             .set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8')
@@ -54,25 +60,32 @@ module.exports = {
             })
     },
     setBattles: function (userId, lastGameStartTime, server, results) {
-        const self = this;
+        try {
+            const self = this;
 
-        for (let i = results.length - 1; i >= 0; i--) {
-            const battle = results[i];
+            for (let i = results.length - 1; i >= 0; i--) {
+                const battle = results[i];
 
-            if (lastGameStartTime === '' || battle.started_at > lastGameStartTime) {
+                if (lastGameStartTime === '' || battle.started_at > lastGameStartTime) {
 
-                if (i == results.length - 1) {
-                    console.log(`start to get more data by offset`);
-                    self.getRecentBattleByUserId(userId, battle.offset, lastGameStartTime, server);
-                } else {
-                    results.splice(results.length - 1 - i, i + 1);
+                    if (i == results.length - 1) {
+                        console.log(`start to get more data by offset`);
+                        self.getRecentBattleByUserId(userId, battle.offset, lastGameStartTime, server);
+                    } else {
+                        results.splice(results.length - 1 - i, i + 1);
+                    }
+                    console.log(`start to insert to mongo`);
+                    dao.setBattles(results);
+                    break;
                 }
-                console.log(`start to insert to mongo`);
-                dao.setBattles(results);
-                break;
             }
+        } catch (error) {
+            console.log(error.stack);
         }
     }
 }
 
-module.exports.do('5a0c61397732d50001497349');
+module.exports.do({
+    name: 'frankknnaarf',
+    userId: '5a0c61397732d50001497349'
+});

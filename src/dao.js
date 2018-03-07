@@ -18,13 +18,15 @@ module.exports = {
             console.log(error.stack);
         }
     },
-    getLastGameBattle: async function (userId, server) {
+    getLastGameBattle: async function (userName, userId, server) {
         try {
             const client = await getMongo();
             const pubgee = client.db(CONSTANT.PUBGEE);
             const findDetail = {
                 participant: {
-                    _id: userId
+                    user: {
+                        nickname: userName
+                    }
                 },
                 server: server
             };
@@ -53,4 +55,4 @@ module.exports = {
     }
 }
 
-module.exports.getLastGameBattle('5a0c61397732d50001497349','sea');
+module.exports.getLastGameBattle('5a0c61397732d50001497349', 'sea');
