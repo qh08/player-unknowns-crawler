@@ -29,7 +29,7 @@ module.exports = {
     },
     doSpider: async function (userId, offset, lastGameStartTime, server) {
         const results = await this.getRecentBattleByUserId(userId, offset, lastGameStartTime, server);
-        self.setBattles(userId, lastGameStartTime, server, results);
+        this.setBattles(userId, lastGameStartTime, server, results);
     },
     getRecentBattleByUserId: async function (userId, offset, lastGameStartTime, server) {
         console.log(`userId : ${userId}`);
@@ -70,7 +70,7 @@ module.exports = {
 
                     if (i == results.length - 1) {
                         console.log(`start to get more data by offset`);
-                        self.getRecentBattleByUserId(userId, battle.offset, lastGameStartTime, server);
+                        self.doSpider(userId, offset, lastGameStartTime, server);
                     } else {
                         results.splice(results.length - 1 - i, i + 1);
                     }
