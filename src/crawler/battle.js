@@ -46,11 +46,7 @@ module.exports = {
             .get(url)
             .set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8')
             .set('user-agent', userAgent)
-            .set('cookie', '_ga=GA1.2.1217097403.1518095147; _gid=GA1.2.1025910423.1519391337; _referrer=user,; XSRF-TOKEN=eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ%3D%3D; pubg_session=eyJpdiI6IkNsbzhlRXRibmRqbU1JNTVMNmVud0E9PSIsInZhbHVlIjoiWktzQVwveHY2NTVlakxuZjh6emZ4T0NyTHlxR3dpdFEweTFTdGM0SlNsUjZ0WDQ3NmJOcDVuc0lcL3UwZHpNUlByV3I5T2VjUkhiQXRPenV6VzB5ZzROdz09IiwibWFjIjoiZGVmODc5NGU3MGI0ZWRjOWIzY2IzMWFkNjAxOTZmNDMxOGQzNGY4OTk1NmVkNTdjOTE2OGUzMTIxODZiYTJhYiJ9; _gat_gtag_UA_37377845_10=1;')
-            // .set('referer','https://pubg.op.gg/user/frankknnaarf?server=as')
-            .set('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36')
-            .set('x-newrelic-id', 'VQcEVlFSDBABVFlWDwMAV1U=')
-            .set('x-xsrf-token', 'eyJpdiI6ImRBUjhKY1pxYVVzVk9yQm9SeXhIakE9PSIsInZhbHVlIjoibzdNRmx6RlN2YUl4eG5cL3BqMUk0MVVRNXc3WjBVQW1UYzdSR0FPYm9qVGRSbk5LZDJjWEZuNWUyZ0ZsWmFwdm5RNzZ1SEIzXC95b0hcL3JMYmt6VVEweEE9PSIsIm1hYyI6ImYzZmQ5MjQwMjVmYmNjZGUzMDFlN2QxNzMxN2U2ZDRiMzhiYjUyYWRmNDkzMGQ2NDc3YTNlMTA4YTRkOGYxMjkifQ==')
+            .set('cookie', '_ga=GA1.2.1217097403.1518095147; __uis=59b7dbb5-189c-11e8-9a0c-000acd2b1aa8; _gid=GA1.2.316500541.1520431758; _referrer=user,; recent-searches=Take-you-fly,flygepi,17_shou,kunbufenzi,faker111,4AMGuCun,wuyu0202,feiker1111,frankknnaarf; XSRF-TOKEN=eyJpdiI6IlU0THZIYWdlQ0ZyYURsQWFJU0tjT3c9PSIsInZhbHVlIjoiSHpmODZBK2xLNWlaaUdQMVQ1N2VYcWpQVmhzV3hFdFphbmFMV2NzZXY5dW00VmpzTkI0cWhibzdIYVJwVllMbjdDTDJJYjhvYUZhYmhoVmhLcmRqamc9PSIsIm1hYyI6IjJhZWY1OTY3ZDg4NTRlZTYwOTNlZGMyNDQ5YzYzZWE2MmZlNTE0OTBlYTkxMDJmMWVjNDllMTk2YzA4OThiYmMifQ%3D%3D; pubg_session=eyJpdiI6IllKb1wvcUQrRDdZQWVkVDZsc3BJYUdnPT0iLCJ2YWx1ZSI6IkZyWXgrdFNLZ09mSTF5KzE5eTBsckJVZktRRlFidlhzZUltc0gzS2E5MkdLZ2duT0NSVWtqaGRldFdvbDZSSk5NWGtWa05IR2U5ZzZTRk5kKzZycGxRPT0iLCJtYWMiOiI1OTA1MGMzMDVkMjY0YzZmZTU0YTY2YmFlOTRiYzE1MWZlNWExYTM2NzQwY2U3OWI4NGY3NTFjNDNmMmQ2ZjM1In0%3D')
             .then((res) => {
                 console.log(`receive battle data from server : ${server}`);
                 return (JSON.parse(res.text).matches.items);
@@ -70,7 +66,7 @@ module.exports = {
 
                     if (i == results.length - 1) {
                         console.log(`start to get more data by offset`);
-                        self.doSpider(userId, offset, lastGameStartTime, server);
+                        self.doSpider(userId, battle.offset, lastGameStartTime, server);
                     } else {
                         results.splice(results.length - 1 - i, i + 1);
                     }

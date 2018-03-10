@@ -8,7 +8,7 @@
             /constants.js           ----常量
             /database.js(ignored)   ----mongo数据库配置文件(被gitigore屏蔽)
             /player.js              ----人员清单
-        /spider
+        /crawler
             /index.js               ----比赛数据爬虫
             /user.js                ----人员id爬虫
             /userAgents.js          ----userAgents配置文件
