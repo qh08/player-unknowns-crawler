@@ -23,17 +23,14 @@ module.exports = {
             const client = await getMongo();
             const pubgee = client.db(CONSTANT.PUBGEE);
             const findDetail = {
-                participant: {
-                    user: {
-                        nickname: userName
-                    }
-                },
+                userId: userId,
                 server: server
             };
             const sortWay = {
-                started_at: 1
+                started_at: -1
             };
             const results = await pubgee.collection(CONSTANT.BATTLE).find(findDetail).sort(sortWay).limit(1).toArray();
+            console.dir(results);
             client.close();
             return results;
 
@@ -55,4 +52,4 @@ module.exports = {
     }
 }
 
-module.exports.getLastGameBattle('5a0c61397732d50001497349', 'sea');
+module.exports.getLastGameBattle('frankknnaarf', '5a0c61397732d50001497349', 'sea');

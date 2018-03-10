@@ -16,7 +16,8 @@ module.exports = {
 
             async.eachLimit(urlServer, 2, async (server) => {
 
-                const lastBattle = await dao.getLastGameBattle(userName, userId, server);
+                const lastBattleArray = await dao.getLastGameBattle(userName, userId, server);
+                const lastBattle = lastBattleArray.length > 0 ? lastBattleArray[0] : [];
                 const offset = lastBattle.offset || '';
                 const lastGameStartTime = lastBattle.started_at || '';
 
@@ -71,6 +72,9 @@ module.exports = {
                         results.splice(results.length - 1 - i, i + 1);
                     }
                     console.log(`start to insert to mongo`);
+                    results.forEach((value) => {
+                        value.userId = userId;
+                    });
                     dao.setBattles(results);
                     break;
                 }

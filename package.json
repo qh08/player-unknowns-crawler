@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./test/index.js",
-    "battle": "node ./src/spider/battle.js"
+    "battle": "node ./src/crawler/battle.js"
   },
   "author": "",
   "license": "ISC",
